@@ -55,7 +55,12 @@ def create_task():
             due_date_str = data['due_date']
             if not is_valid_date(due_date_str):
                 return jsonify({'error': 'Invalid date format. Date must be in YYYY-MM-DD format.'}), 400
+            year, month, day = map(int, due_date_str.split('-'))
+            if not is_valid_month(month):
+                return jsonify({'error': 'Invalid month. Month must be between 1 and 12.'}), 400
 
+            if not is_valid_day(year, month, day):
+                return jsonify({'error': 'Invalid day for the given month.'}), 400
         # Validate category
         category = data.get('category')
         if category not in ['frontend', 'backend', 'fullstack']:
