@@ -55,3 +55,23 @@ this is an example of the json we are passing to the  post method with clicking 
     "title": "testing"
 }
 
+
+Error Handling
+General Error Responses
+400 Bad Request: This error response indicates that the server cannot process the request due to client error (e.g., invalid JSON, missing parameters). The response body will include details about the error.
+
+404 Not Found: This error response indicates that the requested resource could not be found on the server. For example, when attempting to retrieve or update a task with an invalid ID.
+
+500 Internal Server Error: This error response indicates that the server encountered an unexpected condition that prevented it from fulfilling the request. This could occur due to issues with the database or server-side logic. The response body will include details about the error.
+
+Specific Error Handling
+Invalid Date Format: When creating or updating a task, if the provided date is not in the YYYY-MM-DD format, the server will respond with a 400 Bad Request error and provide details about the expected date format.
+
+Invalid Month or Day: If the provided date contains an invalid month or day (e.g., month greater than 12, day out of range for the given month), the server will respond with a 400 Bad Request error and provide details about the issue.
+
+Invalid Category: When creating or updating a task, if the provided category is not one of the allowed values ('frontend', 'backend', 'fullstack'), the server will respond with a 400 Bad Request error and provide details about the allowed categories.
+
+Task Not Found: When attempting to retrieve, update, or delete a task with an invalid ID (i.e., a task that does not exist), the server will respond with a 404 Not Found error and inform the client that the task does ot exist.
+Cannot Update ID: When attempting to update a task and including the id field in the request payload, the server will respond with a 400 Bad Request error and inform the client that the task ID cannot be updated.
+
+Cannot Specify ID: When attempting to create a new task and including the id field in the request payload, the server will respond with a 400 Bad Request error and inform the client that the ID cannot be specified during task creation.
