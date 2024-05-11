@@ -20,11 +20,13 @@ def is_valid_day(year, month, day):
         return True
     except ValueError:
         return False
+# Create Flask app     
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/Tasks'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+# Initialize database
 db.init_app(app)
+# Route to get all tasks
 @app.route('/task', methods=['GET'])
 def get_tasks():
     try:
@@ -40,27 +42,26 @@ def get_tasks():
         } for task in tasks])
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
-
+# Route to create a new task
 @app.route('/task', methods=['POST'])
 def create_task():
     try:
         data = request.get_json()
+        if 'id' in data:
+            return jsonify({'error': 'Cannot specify ID when creating a new task.'}), 400
+
+        # Check if due_date is provided and valid
         if 'due_date' in data:
             due_date_str = data['due_date']
             if not is_valid_date(due_date_str):
                 return jsonify({'error': 'Invalid date format. Date must be in YYYY-MM-DD format.'}), 400
 
-            year, month, day = map(int, due_date_str.split('-'))
-            if not is_valid_month(month):
-                return jsonify({'error': 'Invalid month. Month must be between 1 and 12.'}), 400
-
-            if not is_valid_day(year, month, day):
-                return jsonify({'error': 'Invalid day for the given month.'}), 400
-        
+        # Validate category
         category = data.get('category')
         if category not in ['frontend', 'backend', 'fullstack']:
             return jsonify({'error': 'Invalid category. Allowed values: frontend, backend, fullstack'}), 400
-        
+
+        # Create new task
         new_task = Task(
             title=data['title'],
             description=data['description'],
@@ -78,7 +79,7 @@ def create_task():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-
+# Route to get a specific task by ID
 @app.route('/task/<int:task_id>', methods=['GET'])
 def get_task(task_id):
     try:
@@ -96,11 +97,17 @@ def get_task(task_id):
         })
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
+# Route to update a specific task by ID
 @app.route('/task/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
     try:
-        task = Task.query.get_or_404(task_id)
+        task = Task.query.get(task_id)
+        if task is None:
+            return jsonify({'error': 'Task does not exist.'}), 404
         data = request.get_json()
+
+        if 'id' in data:
+            return jsonify({'error': 'Cannot update ID of a task.'}), 400
         if 'due_date' in data:
             due_date_str = data['due_date']
             if not is_valid_date(due_date_str):
@@ -128,10 +135,13 @@ def update_task(task_id):
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+# Route to delete a specific task by ID
 @app.route('/task/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     try:
-        task = Task.query.get_or_404(task_id)
+        task = Task.query.get(task_id)
+        if task is None:
+            return jsonify({'message': 'Task has already been deleted.'}), 200
         db.session.delete(task)
         db.session.commit()
         return jsonify({'message': 'Task deleted successfully!'})

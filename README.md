@@ -42,4 +42,16 @@ Check the API responses for success or error messages.
 
 make sure in Postman  when using put or post to choose Body tab then raw,and JSON from the drop down
 and provide the json you want to add or update
+
 check the screenshot provided  please
+
+this is an example of the json we are passing to the  post method with clicking raw and choosing JSON
+{
+    "category": "frontend",
+    "completed": false,
+    "description": "testing purpose only",
+    "due_date": "2024-01-04",
+    "priority": 2,
+    "title": "testing"
+}
+
