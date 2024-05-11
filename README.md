@@ -18,6 +18,16 @@ Setting Up the Database
 Install PostgreSQL: PostgreSQL Downloads
 Create a PostgreSQL database named Tasks.
 create a PostgreSQl table named task.
+CREATE TABLE task (
+	id SERIAL PRIMARY KEY,
+	title VARCHAR(250),
+    description VARCHAR(250),
+	completed BOOLEAN,
+	due_date DATE,
+    priority INTEGER,
+    category TEXT;
+	
+);
 Set up the database connection URI in app.py
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/Tasks'
