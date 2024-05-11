@@ -11,7 +11,7 @@ Postman (for testing the API)
 
 Installing Dependencies
 
-pip install Flask SQLAlchemy
+pip install Flask SQLAlchemy  psycopg2
 
 
 Setting Up the Database

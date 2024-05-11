@@ -82,7 +82,9 @@ def create_task():
 @app.route('/task/<int:task_id>', methods=['GET'])
 def get_task(task_id):
     try:
-        task = Task.query.get_or_404(task_id)
+        task = Task.query.get(task_id)
+        if task is None:
+            return jsonify({'error': 'Task does not exist.'}), 404
         return jsonify({
             'id': task.id,
             'title': task.title,
