@@ -3,7 +3,7 @@
 from flask import Flask, jsonify, request
 from models import db, Task
 from datetime import datetime
-
+from sqlalchemy.exc import SQLAlchemyError
 def is_valid_date(date_str):
     try:
         datetime.strptime(date_str, '%Y-%m-%d')
@@ -61,6 +61,7 @@ def create_task():
 
             if not is_valid_day(year, month, day):
                 return jsonify({'error': 'Invalid day for the given month.'}), 400
+
         # Validate category
         category = data.get('category')
         if category not in ['frontend', 'backend', 'fullstack']:
@@ -110,7 +111,7 @@ def update_task(task_id):
         if task is None:
             return jsonify({'error': 'Task does not exist.'}), 404
         data = request.get_json()
-
+ 
         if 'id' in data:
             return jsonify({'error': 'Cannot update ID of a task.'}), 400
         if 'due_date' in data:
